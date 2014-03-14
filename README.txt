@@ -1,3 +1,4 @@
+* Clone this repository
 * Go to chrome://extensions/
 * Click Developer mode checkbox in top right
 * Click load unpacked extension
