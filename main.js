@@ -97,7 +97,7 @@ function listener( ev ) {
 			});
 			if (comments > 0)
 				$( '<span/>' ).text( ' (' + comments + ')').appendTo( $t.find( 'tr' ).eq( 0 ).find( 'td' ).eq( 2 ) );
-			$( '<span/>' ).text( ' / ' + parent ).appendTo( $t.find( '.patchSetRevision' ) );
+			$( '<span/>' ).text( ' / ' + parent ).appendTo( $t.find( '.patchSetRevision' ).eq( 0 ) );
 		})
 	}
 }
