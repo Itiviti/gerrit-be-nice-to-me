@@ -2,14 +2,21 @@
 
 //
 var xGerritAuth;
+var isNewScreen;
 var gerrit_rpc_base = "/gerrit_ui/rpc/";
 var current_change_id;
 var gerrit_request_id = 1;
 
+var commentPanelClass;
+var commentAuthorClass;
+var commentSummaryClass;
+var commentPanelHeader;
+var commentPanelMessage;
+
 function colorComment( $commentPanel ) {
-	var author = $commentPanel.find( '.commentPanelAuthorCell' ).text();
+	var author = $commentPanel.find( commentPanelAuthorClass ).text();
 	var username = $('.menuBarUserName').text()
-	var heading = $commentPanel.find( '.commentPanelMessage p' ).eq( 0 ).text(),
+	var heading = $commentPanel.find( commentPanelMessage ).eq( 0 ).text(),
 		color = '#aaa';
 	if (author === username) {
 		color = 'blue';
@@ -72,16 +79,19 @@ function parseChangeId(href) {
 
 function listener( ev ) {
 	var $t = $( ev.target ), $owner, author, action;
-	if ( $t.hasClass( 'commentPanel' ) ) { // force open comment panel
-		author = $t.find( '.commentPanelAuthorCell' ).text();
-		action = $t.find( '.commentPanelSummary' ).text();
+
+	if ( $t.hasClass( commentPanelClass ) ) { // force open comment panel
+		author = $t.find( commentPanelAuthorClass ).text();
+		action = $t.find( commentPanelSummaryClass ).text();
 		if ( author === 'builder builder' || author === 'Review Bot' ||
 			action.indexOf( 'Uploaded patch set' ) === 0  ||
 			action.match( /was rebased$/ ) ) {
 			 // make jenkins comments less prominent
-			$t.find( '.commentPanelHeader' ).css( 'opacity', 0.6 );
-		} else if (action.match( /…$/)) {
-			$t.find( '.commentPanelSummary' ).hide();
+			$t.find( commentPanelHeader ).css( 'opacity', 0.6 );
+		} 
+		//TODO: new screen uses AJAX to fetch the comments for a patch set... so this simple match won't work
+		else if (action.match( /…$/)) {
+			$t.find( commentPanelSummaryClass ).hide();
 			$t.find( '.commentPanelContent' ).show();
 		}
 		colorComment( $t );
@@ -102,6 +112,14 @@ function listener( ev ) {
 	}
 }
 
+function setupClassNames( ) {
+    commentPanelClass = isNewScreen ? 'GKSE20JDH4' : 'commentPanel';
+    commentPanelAuthorClass = isNewScreen ? '.GKSE20JDI4' : '.commentPanelAuthorCell';
+    commentPanelSummaryClass = isNewScreen ? '.GKSE20JDJ4' : '.commentPanelSummary';
+    commentPanelHeader = isNewScreen ? '.GKSE20JDF4' : '.commentPanelHeader';
+    commentPanelMessage = isNewScreen ? '.GKSE20JDJ4' : '.commentPanelMessage p';
+}
+
 document.addEventListener( 'DOMNodeInserted', listener, false );
 
 $.get(document.location.origin.toString())
@@ -111,6 +129,9 @@ $.get(document.location.origin.toString())
 		xGerritAuth = xGerritAuth[1].split('=')[1].split('"')[1]
 	else
 		xGerritAuth=""
+
+	isNewScreen = (res.indexOf('CHANGE_SCREEN2') != -1);
+	setupClassNames();
 });
 
 } )( jQuery );
