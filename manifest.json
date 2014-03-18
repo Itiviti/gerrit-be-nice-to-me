@@ -6,7 +6,7 @@
 	"version": "1.0",
 	"permissions": [],
 	"content_scripts": [{
-		"matches": [ "http://repo.ullink.lan:8080/*" , "http://git.ullink.lan:8080/*"],
+		"matches": [ "http://repo.ullink.lan:8080/*" , "http://git.ullink.lan:8080/*", "http://git:8080/*", "http://repo:8080/*"],
 		"js": [ "jquery.js", "main.js" ]
 	}]
 }
