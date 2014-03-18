@@ -13,13 +13,13 @@ function colorComment( $commentPanel ) {
 		color = '#aaa';
 	if (author === username) {
 		color = 'blue';
-	} else if ( heading.match( /Code\-Review\-2$/ ) || heading.match( /Verified\-2$/ ) ) {
+	} else if ( heading.match( /Code\-Review\-2/ ) || heading.match( /Verified\-2/ ) ) {
 		color = '#C90505';
-	} else if ( heading.match( /Code\-Review\-1$/ ) || heading.match( /Verified\-1$/ ) ) {
+	} else if ( heading.match( /Code\-Review\-1/ ) || heading.match( /Verified\-1/ ) ) {
 		color = 'red';
-	} else if ( heading.match( /Code\-Review\+1$/ ) ) {
+	} else if ( heading.match( /Code\-Review\+1/ ) ) {
 		color = 'yellow';
-	} else if ( heading.match( /Code\-Review\+2$/ ) ) {
+	} else if ( heading.match( /Code\-Review\+2/ ) ) {
 		color = 'green';
 	}
 	$commentPanel.css( {
