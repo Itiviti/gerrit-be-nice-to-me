@@ -13,7 +13,6 @@ var commentSummaryClass;
 var commentPanelHeader;
 var commentPanelMessage;
 
-
 function colorComment( $commentPanel ) {
 	var author = $commentPanel.find( commentPanelAuthorClass ).text();
 	var username = $('.menuBarUserName').text()
@@ -80,6 +79,7 @@ function parseChangeId(href) {
 
 function listener( ev ) {
 	var $t = $( ev.target ), author, action;
+
 	if ( $t.hasClass( commentPanelClass ) ) { // force open comment panel
 		var $authorNode = $t.find( commentPanelAuthorClass );
 		author = $authorNode.text();
@@ -126,7 +126,6 @@ function setupClassNames( ) {
     commentPanelHeader = isNewScreen ? '.GKSE20JDF4' : '.commentPanelHeader';
     commentPanelMessage = isNewScreen ? '.GKSE20JDJ4' : '.commentPanelMessage p';
 }
-
 
 document.addEventListener( 'DOMNodeInserted', listener, false );
 
