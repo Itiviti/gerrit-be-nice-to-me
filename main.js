@@ -13,10 +13,6 @@ var commentSummaryClass;
 var commentPanelHeader;
 var commentPanelMessage;
 
-// new screen specific
-var v2Expand = {timer: undefined, fired: false};
-var v2ExpandCommentsDelay = 1000;
-var minorComments = [];
 
 function colorComment( $commentPanel ) {
 	var author = $commentPanel.find( commentPanelAuthorClass ).text();
@@ -83,27 +79,27 @@ function parseChangeId(href) {
 }
 
 function listener( ev ) {
-	var $t = $( ev.target ), $owner, author, action;
-	if (isNewScreen) {
-		rescheduleExpandTimer();
-	}
+	var $t = $( ev.target ), author, action;
 	if ( $t.hasClass( commentPanelClass ) ) { // force open comment panel
-		authorNode = $t.find( commentPanelAuthorClass );
-		author = authorNode.text();
+		var $authorNode = $t.find( commentPanelAuthorClass );
+		author = $authorNode.text();
 		action = $t.find( commentPanelSummaryClass ).text();
 		if ( author === 'builder builder' || author === 'Review Bot' ||
 			action.indexOf( 'Uploaded patch set' ) === 0  ||
 			action.match( /was rebased$/ ) ) {
 			 // make jenkins comments less prominent
 			$t.find( commentPanelHeader ).css( 'opacity', 0.6 );
-			if (isNewScreen) {
-				minorComments.push(authorNode);
-			}
 		}
-		else if (!isNewScreen && action.match( /…$/)) {
+		else if ( !isNewScreen && action.match( /…$/) ) {
 			// expand comment
 			$t.find( commentPanelSummaryClass ).hide();
 			$t.find( '.commentPanelContent' ).show();
+		}
+		else if ( isNewScreen && action !== '' ) {
+			// expand comment
+			setTimeout(function() { // yield
+				$authorNode.trigger( "click" );
+			}, 0)
 		}
 		colorComment( $t );
 	} else if ( $t.hasClass( 'gwt-InlineHyperlink' ) && $t.text() === 'Permalink') {
@@ -131,40 +127,6 @@ function setupClassNames( ) {
     commentPanelMessage = isNewScreen ? '.GKSE20JDJ4' : '.commentPanelMessage p';
 }
 
-function expandComments() {
-	v2Expand.fired = true;
-	var btn = findButtonByText("Expand All");
-	if ($(btn).is(":visible")) {
-		$(btn).trigger( "click" );
-		setTimeout(function() { // yield then minimize minorComments
-			for(var i=0; i < minorComments.length; i++) {
-				$(minorComments[i]).trigger( "click" );
-			}
-		}, 0);
-	}
-}
-
-function findButtonByText(target) { 
-	var ret;
-	$( 'button' ).each(function( index ) {
-		if ($( this ).text() == target){
-			ret = this;
-			return;
-		}
-	});
-	return ret;
-}
-
-function rescheduleExpandTimer( ) {
-	if (v2Expand.fired)
-		return;
-	// heuristic, back off until all elements are inserted (messages are ajax loaded first
-	// via '/changes/$changeId/detail?O=404'; comments are loaded thereafter).
-	// XXX could be refined by intercepting XMLHttpRequest.prototype.open to delay until all requests complete.
-	if (v2Expand.timer != undefined)
-		clearTimeout(v2Expand.timer);
-	v2Expand.timer = setTimeout(expandComments, v2ExpandCommentsDelay);
-}
 
 document.addEventListener( 'DOMNodeInserted', listener, false );
 
