@@ -78,21 +78,28 @@ function parseChangeId(href) {
 }
 
 function listener( ev ) {
-	var $t = $( ev.target ), $owner, author, action;
+	var $t = $( ev.target ), author, action;
 
 	if ( $t.hasClass( commentPanelClass ) ) { // force open comment panel
-		author = $t.find( commentPanelAuthorClass ).text();
+		var $authorNode = $t.find( commentPanelAuthorClass );
+		author = $authorNode.text();
 		action = $t.find( commentPanelSummaryClass ).text();
 		if ( author === 'builder builder' || author === 'Review Bot' ||
 			action.indexOf( 'Uploaded patch set' ) === 0  ||
 			action.match( /was rebased$/ ) ) {
 			 // make jenkins comments less prominent
 			$t.find( commentPanelHeader ).css( 'opacity', 0.6 );
-		} 
-		//TODO: new screen uses AJAX to fetch the comments for a patch set... so this simple match won't work
-		else if (action.match( /…$/)) {
+		}
+		else if ( !isNewScreen && action.match( /…$/) ) {
+			// expand comment
 			$t.find( commentPanelSummaryClass ).hide();
 			$t.find( '.commentPanelContent' ).show();
+		}
+		else if ( isNewScreen && action !== '' ) {
+			// expand comment
+			setTimeout(function() { // yield
+				$authorNode.trigger( "click" );
+			}, 0)
 		}
 		colorComment( $t );
 	} else if ( $t.hasClass( 'gwt-InlineHyperlink' ) && $t.text() === 'Permalink') {
@@ -130,7 +137,9 @@ $.get(document.location.origin.toString())
 	else
 		xGerritAuth=""
 
-	isNewScreen = (res.indexOf('CHANGE_SCREEN2') != -1);
+	// new screen can be triggered manually via url (/c2/), which doesn't reflect in json data
+	var hasNonGlobalV2Screen = document.location.href.indexOf('/#/c2/') != -1;
+	isNewScreen = hasNonGlobalV2Screen || (res.indexOf('CHANGE_SCREEN2') != -1);
 	setupClassNames();
 });
 
