@@ -63,6 +63,11 @@ function getDetail(id, psid, cb) {
 	});
 }
 
+function getChangeOwner()
+{
+    return isNewScreen ? $($('.GKSE20JDE2').find('span').get(1)).text() : $($('.accountLinkPanel').find('gwt-InlineHyperlink')).text();
+}
+
 function parseChangeId(href) {
 	var orig = href.substring(8)
 	orig = orig.substring(orig.indexOf('/'))
@@ -84,12 +89,23 @@ function listener( ev ) {
 		var $authorNode = $t.find( commentPanelAuthorClass );
 		author = $authorNode.text();
 		action = $t.find( commentPanelSummaryClass ).text();
-		if ( author === 'builder builder' || author === 'Review Bot' ||
-			action.indexOf( 'Uploaded patch set' ) === 0  ||
-			action.match( /was rebased$/ ) ) {
-			 // make jenkins comments less prominent
-			$t.find( commentPanelHeader ).css( 'opacity', 0.6 );
-		}
+        var username = $('.menuBarUserName').text()
+        if (author === 'builder builder' || author === 'Review Bot') {
+            if (username === getChangeOwner())
+            {
+                // make jenkins comments less prominent
+                $t.find( commentPanelHeader ).css( 'opacity', 0.6 );
+            }
+            else
+            {
+                // reviewers should not see comments related to builder / review bot
+                $t.find( commentPanelHeader ).hide();
+            }
+        }
+        else if (action.indexOf( 'Uploaded patch set' ) === 0  || action.match( /was rebased$/ )) {
+            // messages regarding patch sets / change rebasing should have the opacity reduced as well
+            $t.find( commentPanelHeader ).css( 'opacity', 0.6 );
+        }
 		else if ( !isNewScreen && action.match( /…$/) ) {
 			// expand comment
 			$t.find( commentPanelSummaryClass ).hide();
