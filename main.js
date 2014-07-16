@@ -102,7 +102,7 @@ function listener( ev ) {
 		    }
 		    else {
 		        // reviewers should not see comments related to builder / review bot
-		        $t.find(commentPanelHeader).hide();
+		        $t.find(commentPanelHeader).parent().hide();
 		    }
 		}
 		else if (action.indexOf('Uploaded patch set') === 0 || action.match(/was rebased$/)) {
