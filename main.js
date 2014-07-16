@@ -15,10 +15,9 @@ var commentPanelMessage;
 
 function colorComment( $commentPanel ) {
 	var author = $commentPanel.find( commentPanelAuthorClass ).text();
-	var username = $('.menuBarUserName').text()
 	var heading = $commentPanel.find( commentPanelMessage ).eq( 0 ).text(),
 		color = '#aaa';
-	if (author === username) {
+	if (author === getUsername()) {
 		color = 'blue';
 	} else if ( heading.match( /Code\-Review\-2/ ) || heading.match( /Verified\-2/ ) ) {
 		color = '#C90505';
@@ -63,9 +62,16 @@ function getDetail(id, psid, cb) {
 	});
 }
 
-function getChangeOwner()
-{
+function getChangeOwner() {
     return isNewScreen ? $($('.GKSE20JDE2').find('span').get(1)).text() : $($('.accountLinkPanel').find('gwt-InlineHyperlink')).text();
+}
+
+function getUsername() {
+    return $('.menuBarUserName').text();
+}
+
+function makeCommentTransparent($commentPanel) {
+    $commentPanel.find(commentPanelHeader).css('opacity', 0.6);
 }
 
 function parseChangeId(href) {
@@ -89,23 +95,20 @@ function listener( ev ) {
 		var $authorNode = $t.find( commentPanelAuthorClass );
 		author = $authorNode.text();
 		action = $t.find( commentPanelSummaryClass ).text();
-        var username = $('.menuBarUserName').text()
-        if (author === 'builder builder' || author === 'Review Bot') {
-            if (username === getChangeOwner())
-            {
-                // make jenkins comments less prominent
-                $t.find( commentPanelHeader ).css( 'opacity', 0.6 );
-            }
-            else
-            {
-                // reviewers should not see comments related to builder / review bot
-                $t.find( commentPanelHeader ).hide();
-            }
-        }
-        else if (action.indexOf( 'Uploaded patch set' ) === 0  || action.match( /was rebased$/ )) {
-            // messages regarding patch sets / change rebasing should have the opacity reduced as well
-            $t.find( commentPanelHeader ).css( 'opacity', 0.6 );
-        }
+		if (author === 'builder builder' || author === 'Review Bot') {
+		    if (getUsername() === getChangeOwner()) {
+		        // make jenkins comments less prominent
+		        makeCommentTransparent($t);
+		    }
+		    else {
+		        // reviewers should not see comments related to builder / review bot
+		        $t.find(commentPanelHeader).hide();
+		    }
+		}
+		else if (action.indexOf('Uploaded patch set') === 0 || action.match(/was rebased$/)) {
+		    // messages regarding patch sets / change rebasing should have the opacity reduced as well
+		    makeCommentTransparent($t);
+		}
 		else if ( !isNewScreen && action.match( /…$/) ) {
 			// expand comment
 			$t.find( commentPanelSummaryClass ).hide();
