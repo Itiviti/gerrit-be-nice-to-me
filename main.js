@@ -1,6 +1,5 @@
 ( function( $ ) {
 
-//
 var xGerritAuth;
 var isNewScreen;
 var gerrit_rpc_base = "/gerrit_ui/rpc/";
@@ -127,20 +126,24 @@ function setupClassNames( ) {
     commentPanelMessage = isNewScreen ? '.GKSE20JDJ4' : '.commentPanelMessage p';
 }
 
-document.addEventListener( 'DOMNodeInserted', listener, false );
-
-$.get(document.location.origin.toString())
-.done(function(res) {
-	xGerritAuth = res.split("xGerritAuth")
-	if (xGerritAuth.length>1)
-		xGerritAuth = xGerritAuth[1].split('=')[1].split('"')[1]
-	else
-		xGerritAuth=""
+function initialise(pageData) {
+	xGerritAuth = pageData.xGerritAuth;
 
 	// new screen can be triggered manually via url (/c2/), which doesn't reflect in json data
 	var hasNonGlobalV2Screen = document.location.href.indexOf('/#/c2/') != -1;
-	isNewScreen = hasNonGlobalV2Screen || (res.indexOf('CHANGE_SCREEN2') != -1);
+	var hasV2ScreenInPreferences = pageData.account.generalPreferences.changeScreen.indexOf('CHANGE_SCREEN2') != -1;
+	isNewScreen = hasNonGlobalV2Screen || hasV2ScreenInPreferences;
+
 	setupClassNames();
+
+	console.log("Loaded Gerrit-Be-Nice-To-Me @ Ullink. Using auth token: " + xGerritAuth + " on Gerrit v" + pageData.version);
+}
+
+document.addEventListener( 'DOMNodeInserted', listener, false );
+
+$.get(document.location.origin.toString()).done(function(res) {
+	$.globalEval($(gerrit_hostpagedata).html());
+	initialise(gerrit_hostpagedata);
 });
 
 } )( jQuery );
