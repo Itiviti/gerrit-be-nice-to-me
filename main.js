@@ -2,6 +2,7 @@
 
 var xGerritAuth;
 var isNewScreen;
+var isv29OrGreater;
 var gerrit_rpc_base = "/gerrit_ui/rpc/";
 var current_change_id;
 var gerrit_request_id = 1;
@@ -119,11 +120,11 @@ function listener( ev ) {
 }
 
 function setupClassNames( ) {
-    commentPanelClass = isNewScreen ? 'GKSE20JDH4' : 'commentPanel';
-    commentPanelAuthorClass = isNewScreen ? '.GKSE20JDI4' : '.commentPanelAuthorCell';
-    commentPanelSummaryClass = isNewScreen ? '.GKSE20JDJ4' : '.commentPanelSummary';
-    commentPanelHeader = isNewScreen ? '.GKSE20JDF4' : '.commentPanelHeader';
-    commentPanelMessage = isNewScreen ? '.GKSE20JDJ4' : '.commentPanelMessage p';
+    commentPanelClass = isNewScreen ? (isv29OrGreater ? 'com-google-gerrit-client-change-Message_BinderImpl_GenCss_style-closed' : 'GKSE20JDH4') : 'commentPanel';
+    commentPanelAuthorClass = isNewScreen ? (isv29OrGreater ? '.com-google-gerrit-client-change-Message_BinderImpl_GenCss_style-name' : '.GKSE20JDI4') : '.commentPanelAuthorCell';
+    commentPanelSummaryClass = isNewScreen ? (isv29OrGreater ? '.com-google-gerrit-client-change-Message_BinderImpl_GenCss_style-summary' : '.GKSE20JDJ4') : '.commentPanelSummary';
+    commentPanelHeader = isNewScreen ? (isv29OrGreater ? '.com-google-gerrit-client-change-Message_BinderImpl_GenCss_style-contents' : '.GKSE20JDF4') : '.commentPanelHeader';
+    commentPanelMessage = isNewScreen ? (isv29OrGreater ? '.com-google-gerrit-client-change-Message_BinderImpl_GenCss_style-summary' : '.GKSE20JDJ4') : '.commentPanelMessage p';
 }
 
 function initialise(pageData) {
@@ -133,6 +134,8 @@ function initialise(pageData) {
 	var hasNonGlobalV2Screen = document.location.href.indexOf('/#/c2/') != -1;
 	var hasV2ScreenInPreferences = pageData.account.generalPreferences.changeScreen.indexOf('CHANGE_SCREEN2') != -1;
 	isNewScreen = hasNonGlobalV2Screen || hasV2ScreenInPreferences;
+
+	isv29OrGreater = pageData.version >= "2.9";
 
 	setupClassNames();
 
