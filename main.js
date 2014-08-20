@@ -142,7 +142,7 @@ function initialise(pageData) {
 document.addEventListener( 'DOMNodeInserted', listener, false );
 
 $.get(document.location.origin.toString()).done(function(res) {
-	$.globalEval($(gerrit_hostpagedata).html());
+	$.globalEval($(res).filter("#gerrit_hostpagedata").html());
 	initialise(gerrit_hostpagedata);
 });
 
