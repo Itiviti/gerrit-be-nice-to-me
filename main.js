@@ -5,7 +5,6 @@ var isNewScreen;
 var isv29OrGreater;
 var gerrit_rpc_base = "/gerrit_ui/rpc/";
 var current_change_id;
-var current_patch_set;
 var gerrit_request_id = 1;
 
 var commentPanelClass;
@@ -71,7 +70,7 @@ function parseChangeId(href) {
 		orig = orig.substring(orig.indexOf('/c/')+3)
 	else if (orig.indexOf('/changes/') != -1)
 		orig = orig.substring(orig.indexOf('/changes/')+9)
-	else
+	else 
 		orig = orig.substring(1)
 	if (orig.indexOf('/') != -1)
 		orig = orig.substring(0, orig.indexOf('/'))
@@ -105,17 +104,9 @@ function listener( ev ) {
 		colorComment( $t );
 	} else if ( $t.hasClass( 'gwt-InlineHyperlink' ) && $t.text() === 'Permalink') {
 		current_change_id = parseChangeId($t.attr('href'));
-	} else if ( $t.parent().hasClass( 'gwt-Anchor' ) &&
-			$t.parent().parent().hasClass( 'com-google-gerrit-client-change-ChangeScreen2_BinderImpl_GenCss_style-changeId' ) ) {
-		current_change_id = $t.text();
-		addParents()
-	} else if ( $t.parent().parent().is( 'button' ) &&
-			$t.parent().parent().parent().hasClass( 'com-google-gerrit-client-change-ChangeScreen2_BinderImpl_GenCss_style-popdown' )) {
-		current_patch_set = $t.text().replace(/Patch Sets \((\d+)\/\d+\)/,'$1')
-		addParents()
 	} else if ( $t.hasClass( 'gwt-DisclosurePanel' ) ) {
-		current_patch_set = $t.find( 'tr' ).eq( 0 ).find( 'td' ).eq( 2 ).text().replace('Patch Set ','')
-		getDetail(current_change_id, current_patch_set, function(r) {
+		var psText = $t.find( 'tr' ).eq( 0 ).find( 'td' ).eq( 2 ).text().replace('Patch Set ','')
+	    getDetail(current_change_id, psText, function(r){
 			var parent = r.info.parents[0].id.id;
 			var comments = 0;
 			r.patches.forEach(function(a) {
@@ -124,31 +115,6 @@ function listener( ev ) {
 			if (comments > 0)
 				$( '<span/>' ).text( ' (' + comments + ')').appendTo( $t.find( 'tr' ).eq( 0 ).find( 'td' ).eq( 2 ) );
 			$( '<span/>' ).text( ' / ' + parent ).appendTo( $t.find( '.patchSetRevision' ).eq( 0 ) );
-		})
-	}
-}
-
-function addParents() {
-	if (current_change_id && current_patch_set) {
-		getDetail(current_change_id, current_patch_set, function(r){
-			if (r.info.parents.length != 1) return; // GERRIT already displays parent ids when multiple
-			var tbody = $(':root').find('.com-google-gerrit-client-change-CommitBox_BinderImpl_GenCss_style-header').find( 'tbody' )
-			var parentId = r.info.parents[0].id.id;
-			var commitNode = tbody.find( 'tr' ).eq(2)
-			var parentNode = commitNode.clone()
-			parentNode.find('.com-google-gwtexpui-clippy-client-ClippyCss-label').text(parentId);
-			parentNode.find('.com-google-gerrit-client-change-CommitBox_BinderImpl_GenCss_style-commit').text(' Parent ');
-			var heyThisIsTheProperPageImUpdating = false
-			parentNode.find('*').each(function() {
-				$.each(this.attributes, function(i, attrib){
-					var modified = attrib.value.replace(r.info.revId, parentId)
-					if (attrib.value != modified) {
-						attrib.value = modified
-						heyThisIsTheProperPageImUpdating = true
-					}
-				})
-			})
-			if (heyThisIsTheProperPageImUpdating) parentNode.insertAfter(commitNode)
 		})
 	}
 }
