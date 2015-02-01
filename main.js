@@ -70,7 +70,7 @@ function parseChangeId(href) {
 		orig = orig.substring(orig.indexOf('/c/')+3)
 	else if (orig.indexOf('/changes/') != -1)
 		orig = orig.substring(orig.indexOf('/changes/')+9)
-	else 
+	else
 		orig = orig.substring(1)
 	if (orig.indexOf('/') != -1)
 		orig = orig.substring(0, orig.indexOf('/'))
@@ -127,6 +127,19 @@ function setupClassNames( ) {
     commentPanelMessage = isNewScreen ? (isv29OrGreater ? '.com-google-gerrit-client-change-Message_BinderImpl_GenCss_style-summary' : '.GKSE20JDJ4') : '.commentPanelMessage p';
 }
 
+function isVersion29rGreater(version) {
+    var versionParts = version.split('.');
+
+    if (versionParts.length < 2) {
+        if (versionParts.length == 1) {
+            return versionParts[0] >= 3;
+        }
+        return false;
+    }
+
+    return versionParts[0] >= 2 && versionParts[1] >= 9;
+}
+
 function initialise(pageData) {
 	xGerritAuth = pageData.xGerritAuth;
 
@@ -135,7 +148,7 @@ function initialise(pageData) {
 	var hasV2ScreenInPreferences = pageData.account.generalPreferences.changeScreen.indexOf('CHANGE_SCREEN2') != -1;
 	isNewScreen = hasNonGlobalV2Screen || hasV2ScreenInPreferences;
 
-	isv29OrGreater = pageData.version >= "2.9";
+	isv29OrGreater = isVersion29rGreater(pageData.version);
 
 	setupClassNames();
 
