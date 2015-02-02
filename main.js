@@ -137,7 +137,8 @@ function isVersion29rGreater(version) {
         return false;
     }
 
-    return versionParts[0] >= 2 && versionParts[1] >= 9;
+    return versionParts[0] >= 2 && versionParts[1] >= 9 ||
+        versionParts[0] >= 3;
 }
 
 function initialise(pageData) {
