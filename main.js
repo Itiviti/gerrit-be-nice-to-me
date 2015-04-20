@@ -146,7 +146,7 @@ function initialise(pageData) {
 
 	// new screen can be triggered manually via url (/c2/), which doesn't reflect in json data
 	var hasNonGlobalV2Screen = document.location.href.indexOf('/#/c2/') != -1;
-	var hasV2ScreenInPreferences = pageData.account.generalPreferences.changeScreen.indexOf('CHANGE_SCREEN2') != -1;
+	var hasV2ScreenInPreferences = pageData.account.generalPreferences.changeScreen ? pageData.account.generalPreferences.changeScreen.indexOf('CHANGE_SCREEN2') != -1 : true;
 	isNewScreen = hasNonGlobalV2Screen || hasV2ScreenInPreferences;
 
 	isv29OrGreater = isVersion29rGreater(pageData.version);
