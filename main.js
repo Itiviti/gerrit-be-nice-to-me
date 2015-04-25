@@ -128,6 +128,9 @@ function setupClassNames( ) {
 }
 
 function isVersion29rGreater(version) {
+    var extra = version.indexOf("-");
+    if (extra != -1) version = version.substring(0, extra);
+
     var versionParts = version.split('.');
 
     if (versionParts.length < 2) {
