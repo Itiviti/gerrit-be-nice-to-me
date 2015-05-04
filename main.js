@@ -140,7 +140,9 @@ function isVersion29rGreater(version) {
         return false;
     }
 
-    return versionParts[0] >= 2 && versionParts[1] >= 9 ||
+    var minorVersion = versionParts[1].split('-')[0];
+
+    return versionParts[0] >= 2 && minorVersion >= 9 ||
         versionParts[0] >= 3;
 }
 
